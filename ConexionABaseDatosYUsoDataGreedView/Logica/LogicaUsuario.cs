@@ -76,6 +76,7 @@ namespace ConexionABaseDatosYUsoDataGreedView.Logica {
                 using (SQLiteDataReader reader = cmd.ExecuteReader()) {
                     while (reader.Read()) {
                         datosLista.Add(new Usuario() {
+
                             id = int.Parse(reader["UsuarioID"].ToString()),
                             nombre = reader["Nombre"].ToString(),
                             apellido = reader["Apellido"].ToString(),

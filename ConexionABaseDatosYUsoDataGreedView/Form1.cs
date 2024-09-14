@@ -18,14 +18,58 @@ namespace ConexionABaseDatosYUsoDataGreedView {
         public Form1() {
             InitializeComponent();
 
-            dataGridView_datos.ReadOnly = true;
-
-            dataGridView_datos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dataGridView_datos.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; // Ajusta al espacio disponible
-            dataGridView_datos.AutoResizeColumns(); // Ajusta al contenido
 
 
         }
+
+        private void ConfigurarColumnas() {
+            // Configurar el orden de las columnas de datos
+            dataGridView_datos.Columns["id"].DisplayIndex = 0;
+            dataGridView_datos.Columns["nombre"].DisplayIndex = 1;
+            dataGridView_datos.Columns["apellido"].DisplayIndex = 2;
+            dataGridView_datos.Columns["direccion"].DisplayIndex = 3;
+            dataGridView_datos.Columns["telefono"].DisplayIndex = 4;
+
+            // Configurar las columnas de botones para que estén al final
+            dataGridView_datos.Columns["Edit"].DisplayIndex = 5;
+            dataGridView_datos.Columns["Delete"].DisplayIndex = 6;
+            dataGridView_datos.Columns["Print"].DisplayIndex = 7;
+        }
+
+
+        private void AgregarColumnasBotones() {
+            // Agregar la columna de Editar
+            if (!dataGridView_datos.Columns.Contains("Edit")) {
+                DataGridViewButtonColumn btnEdit = new DataGridViewButtonColumn();
+                btnEdit.Name = "Edit";
+                btnEdit.HeaderText = "Editar";
+                btnEdit.Text = "Editar";
+                btnEdit.UseColumnTextForButtonValue = true;
+                dataGridView_datos.Columns.Add(btnEdit);
+            }
+
+            // Agregar la columna de Borrar
+            if (!dataGridView_datos.Columns.Contains("Delete")) {
+                DataGridViewButtonColumn btnDelete = new DataGridViewButtonColumn();
+                btnDelete.Name = "Delete";
+                btnDelete.HeaderText = "Borrar";
+                btnDelete.Text = "Borrar";
+                btnDelete.UseColumnTextForButtonValue = true;
+                dataGridView_datos.Columns.Add(btnDelete);
+            }
+
+            // Agregar la columna de Imprimir
+            if (!dataGridView_datos.Columns.Contains("Print")) {
+                DataGridViewButtonColumn btnPrint = new DataGridViewButtonColumn();
+                btnPrint.Name = "Print";
+                btnPrint.HeaderText = "Imprimir";
+                btnPrint.Text = "Imprimir";
+                btnPrint.UseColumnTextForButtonValue = true;
+                dataGridView_datos.Columns.Add(btnPrint);
+            }
+        }
+
+
         private string nombreValidado = string.Empty;
         private string apellidoValidado = string.Empty;
         private string direccionValidada = string.Empty;
@@ -98,15 +142,72 @@ namespace ConexionABaseDatosYUsoDataGreedView {
         }
 
         public void MostrarDatos() {
-            dataGridView_datos.DataSource = string.Empty;
-         
-            dataGridView_datos.DataSource = LogicaUsuario.Instancia.Listar();
-            
+            // Limpiar la fuente de datos actual
+            dataGridView_datos.DataSource = null;
 
+            // Obtener los datos
+            var datos = LogicaUsuario.Instancia.Listar();
+
+            // Asignar la nueva fuente de datos
+            dataGridView_datos.DataSource = datos;
+
+            // Agregar columnas de botones si no están presentes
+            AgregarColumnasBotones();
+
+            // Configurar el orden de las columnas
+            ConfigurarColumnas();
         }
+
 
         private void Form1_Load(object sender, EventArgs e) {
             MostrarDatos();
         }
+
+        private void dataGridView_datos_CellClick(object sender, DataGridViewCellEventArgs e)
+{
+    if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+    {
+        string columnName = dataGridView_datos.Columns[e.ColumnIndex].Name;
+
+        switch (columnName)
+        {
+            case "Edit":
+                EditarFila(e.RowIndex);
+                break;
+            case "Delete":
+                BorrarFila(e.RowIndex);
+                break;
+            case "Print":
+                ImprimirFila(e.RowIndex);
+                break;
+        }
     }
+}
+
+private void EditarFila(int rowIndex)
+{
+    var selectedRow = dataGridView_datos.Rows[rowIndex];
+    // Lógica para editar la fila
+    MessageBox.Show("Editar fila: " + selectedRow.Index);
+}
+
+private void BorrarFila(int rowIndex)
+{
+    var result = MessageBox.Show("¿Estás seguro de que deseas eliminar esta fila?", "Confirmar eliminación", MessageBoxButtons.YesNo);
+    if (result == DialogResult.Yes)
+    {
+        dataGridView_datos.Rows.RemoveAt(rowIndex);
+        MessageBox.Show("Fila eliminada");
+    }
+}
+
+private void ImprimirFila(int rowIndex)
+{
+    var selectedRow = dataGridView_datos.Rows[rowIndex];
+    // Lógica para imprimir la fila
+    MessageBox.Show("Imprimir fila: " + selectedRow.Index);
+}
+
+    }
+
 }
